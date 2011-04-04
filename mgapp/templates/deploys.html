@@ -1,0 +1,5 @@
+<ul>
+{% for deploy in deploys %}
+<li>{% if deploy.complete %}x{% endif %} {{ deploy.created }}</li>
+{% endfor %}
+</ul>

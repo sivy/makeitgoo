@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block html_head %}
+<script type="text/javascript">
+$(function() {
+    $('#deploy').click(function(){
+        $('#output').html('')
+        $('#status').html('DEPLOYING');
+        $('#output').load('deploy?app_id=' + $('#app_id').val(), function(){
+            $('#status').html('DEPLOYED');
+            $('#deploys').load('deploys?app_id=' + $('#app_id').val())
+        });
+        
+    })
+    
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>{{ app.name }}</h1>
+<form name="makeitgoo">
+<input type="hidden" value="{{app.id}}" name="app_id" id="app_id" />
+<input type="button" value="deploy" id="deploy">
+<h3 id="status">STATUS</h3>
+<div id="output" style="font-family:'Inconsolata', Courier New, monospace; width:500px"></div>
+</form>
+
+<div id="deploys">
+<ul>
+{% for deploy in deploys %}
+<li>{% if deploy.complete %}x{% endif %} {{ deploy.created }}</li>
+{% endfor %}
+</ul>
+</div>
+
+{% endblock %}
