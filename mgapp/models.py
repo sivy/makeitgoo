@@ -16,7 +16,9 @@ class App(models.Model):
     
     def __str__(self):
         return self.name
-                
+    
+    def latest_deploy(self):
+        return self.deployments.order_by('-created')[0]
     
 class Deploy(models.Model):
     app = models.ForeignKey(App, blank=False, related_name='deployments')

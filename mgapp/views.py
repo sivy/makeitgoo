@@ -46,16 +46,23 @@ def home(request):
         
     })
 
-def app(request):
+def app(request, app_id=None):
 
-    app_id = request.GET.get('app_id')
     app = App.objects.get(id=app_id)
     
-    deploys = Deploy.objects.filter(app=app)[:5]
+    deploys = Deploy.objects.filter(app=app).order_by('-created')[:5]
     
     return render_to_response("app.html", {
         'app': app,
         'deploys': deploys
+    })
+
+def deploy(request, deploy_id=None):
+    
+    deploy = Deploy.objects.get(id=deploy_id)
+    
+    return render_to_response("deploy.html", {
+        'deploy': deploy
     })
 
 @jsonp
@@ -70,7 +77,7 @@ def deploys(request):
     
 @recordstats('')
 @jsonp
-def deploy(request):
+def deploy_app(request):
     app_id = request.GET.get('app_id')
     app = App.objects.get(id=app_id)
     site_name = app.site.name
@@ -91,7 +98,7 @@ def deploy(request):
                 out += _update('starting in', run('pwd'))
                 out += _update('update from repo', run('git pull origin master'))
                 out += _update("post_update hooks", run ('sh post_update.sh'))
-                out += _update('deploy built site', sudo ('cp -R _site/* %s' % site_config['remote_dest']))
+                out += _update('deploy built site', sudo ('cp -R _site/* %s' % config['remote_dest']))
             except Exception, e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 formatted_lines = traceback.format_exc().splitlines()

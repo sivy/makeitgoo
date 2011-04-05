@@ -2,6 +2,6 @@
 
 {% block content %}
     {% for app in apps %}
-        <a href='app?app_id={{app.id}}'>{{app.name}}</a>
+        <a href='{% url mgapp.views.app app.id %}'>{{app.name}}</a>
     {% endfor %}
 {% endblock %}

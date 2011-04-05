@@ -11,7 +11,7 @@ nexus.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
-    # (r'^makegoo/', include('makegoo.foo.urls')),
+    # (r'^makeitgoo/', include('makeitgoo.foo.urls')),
     ('^', include('mgapp.urls')),
     
     # Uncomment the next line to enable the admin:

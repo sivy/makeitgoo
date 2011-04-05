@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block html_head %}{% endblock %}
+
+{% block content %}
+<h1>{{ deploy.app.name }} - Deployed {{ deploy.created }}</h1>
+
+<pre>{{ deploy.output }}
+
+{% endblock %}

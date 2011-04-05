@@ -6,8 +6,9 @@ media_dir = os.path.join(app_path, 'static')
 
 urlpatterns = patterns('mgapp.views',
     url(r'^$', 'home', name='home'),
-    url(r'^app$', 'app', name='app'),
+    url(r'^app/(?P<app_id>[\d]+)$', 'app', name='app'),
+    url(r'^deploy/(?P<deploy_id>[\d]+)$', 'deploy', name='deploy'),
     # deploy
-    url(r'^deploy$', 'deploy', name='deploy'),
+    url(r'^deploy_app$', 'deploy_app', name='deploy_app'),
     url(r'^deploys$', 'deploys', name='deploys'),
 )

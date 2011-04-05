@@ -1,3 +1,8 @@
+django==1.2.5
 nexus
 gargoyle
 south
+-e git://github.com/sivy/py-statsd.git#egg=pystatsd
+simplejson
+fabric>=1.0.1
+pyyaml

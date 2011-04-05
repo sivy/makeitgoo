@@ -2,13 +2,14 @@
 
 {% block html_head %}
 <script type="text/javascript">
+
 $(function() {
     $('#deploy').click(function(){
         $('#output').html('')
         $('#status').html('DEPLOYING');
-        $('#output').load('deploy?app_id=' + $('#app_id').val(), function(){
+        $('#output').load('{% url mgapp.views.deploy_app %}?app_id=' + $('#app_id').val(), function(){
             $('#status').html('DEPLOYED');
-            $('#deploys').load('deploys?app_id=' + $('#app_id').val())
+            $('#deploys').load('{% url mgapp.views.deploys %}?app_id=' + $('#app_id').val())
         });
         
     })
@@ -27,11 +28,7 @@ $(function() {
 </form>
 
 <div id="deploys">
-<ul>
-{% for deploy in deploys %}
-<li>{% if deploy.complete %}x{% endif %} {{ deploy.created }}</li>
-{% endfor %}
-</ul>
+{% include "deploys.html" %}
 </div>
 
 {% endblock %}
