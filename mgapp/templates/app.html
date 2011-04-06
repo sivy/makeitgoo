@@ -28,8 +28,9 @@ $(function() {
 <div id="output" style="font-family:'Inconsolata', Courier New, monospace; width:500px"></div>
 </form>
 
+<h3>Previous Deployments for {{ app.name }}</h3>
 <div id="deploys">
-{% include "deploys.html" %}
+{% include "deploy_list.html" %}
 </div>
 <a href="{% url mgapp.views.deploys %}?app_id={{app.id}}">...more</a>
 
