@@ -24,8 +24,8 @@ def branch(wd=None, local=True):
     cmd = 'git rev-parse --symbolic-full-name --abbrev-ref HEAD'
     return _run(cmd, wd=wd, local=local)
 
-def set_remote(wd=None, local=True):
-    cmd = 'git remote set-url origin'
+def set_remote(remote, wd=None, local=True):
+    cmd = 'git remote set-url origin %s' % remote
     return _run(cmd, wd=wd, local=local)
 
 def status(wd=None, local=True):
