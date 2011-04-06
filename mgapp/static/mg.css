@@ -1,0 +1,14 @@
+body {
+    margin: 20px 100px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    
+}
+
+div#deploys ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}

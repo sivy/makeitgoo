@@ -9,7 +9,8 @@ $(function() {
         $('#status').html('DEPLOYING');
         $('#output').load('{% url mgapp.views.deploy_app %}?app_id=' + $('#app_id').val(), function(){
             $('#status').html('DEPLOYED');
-            $('#deploys').load('{% url mgapp.views.deploys %}?app_id=' + $('#app_id').val())
+            $('#deploys').load('{% url mgapp.views.deploys %}?&count=5&partial=true&app_id=' 
+                + $('#app_id').val())
         });
         
     })
@@ -30,5 +31,6 @@ $(function() {
 <div id="deploys">
 {% include "deploys.html" %}
 </div>
+<a href="{% url mgapp.views.deploys %}?app_id={{app.id}}">...more</a>
 
 {% endblock %}

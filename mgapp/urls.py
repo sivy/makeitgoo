@@ -12,3 +12,9 @@ urlpatterns = patterns('mgapp.views',
     url(r'^deploy_app$', 'deploy_app', name='deploy_app'),
     url(r'^deploys$', 'deploys', name='deploys'),
 )
+
+urlpatterns += patterns('',
+    url(r'^static/(?P<path>.*)/?$', 'django.views.static.serve', 
+        name="static",
+        kwargs={ 'document_root': media_dir }),
+)

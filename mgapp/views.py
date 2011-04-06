@@ -68,10 +68,18 @@ def deploy(request, deploy_id=None):
 @jsonp
 def deploys(request):
     app_id = request.GET.get('app_id')
+    count = request.GET.get('count')
+    partial = request.GET.get('partial')
+    if partial:
+        t = "deploy_list.html"
+    else:
+        t = "deploys.html"
+    
     app = App.objects.get(id=app_id)
     
-    deploys = Deploy.objects.filter(app=app)[:5]
-    return render_to_response("deploys.html", {
+    deploys = Deploy.objects.filter(app=app).order_by('-created')[:count]
+    return render_to_response(t, {
+        'app': app,
         'deploys': deploys
     })
     

@@ -2,10 +2,11 @@
     <head>
         <title>Make It Goo: Deploy Tool</title>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{% url django.views.static.serve 'mg.css' %}" type='text/css' />
         {% block html_head %}{% endblock %}
     </head>
     <body>
-        <h1>Make It Goo</h1>
+        <strong>Make It Goo</strong>
         {% block content %}{% endblock %}
     </body>
 </html>
