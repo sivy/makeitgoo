@@ -1,0 +1,2 @@
+handler: ys_server/apache/django.wsgi
+type: wsgi

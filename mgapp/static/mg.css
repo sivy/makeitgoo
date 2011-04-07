@@ -1,14 +1,26 @@
 body {
     margin: 20px 100px;
     font-family: Helvetica, Arial, sans-serif;
+    background-color: #dfdfdf;
 }
 
-h1 {
-    
+#content {
+    border: 1px solid #bbb;
+    background-color: #fff;
+    -moz-box-shadow: 0 7px 11px #aaa;
+    -webkit-box-shadow: 0 7px 11px #aaa;
+    box-shadow: 0 7px 11px #aaa;
+    padding: 5px 20px 25px;
 }
 
 div#deploys ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+h1, h2, h3, h4 {
+    margin: 15px 0 10px;
+    padding: 0 0 5px;
+    border-bottom: 1px solid #ddd;
 }

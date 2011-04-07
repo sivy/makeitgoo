@@ -6,7 +6,9 @@
         {% block html_head %}{% endblock %}
     </head>
     <body>
-        <strong>Make It Goo</strong>
+        <div id="content">
+        <p><strong><a href="{% url mgapp.views.home %}">Make It Goo</a></strong></p>
         {% block content %}{% endblock %}
+        </div>
     </body>
 </html>

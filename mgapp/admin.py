@@ -6,7 +6,7 @@ from models import App, Deploy
 class AppManager(admin.ModelAdmin):
     fieldsets = (
             (None, {
-                'fields': ('name', 'site')
+                'fields': ('name', 'site', 'wd')
             }),
             ('Git options', {
                 'fields': ('remote_url', 'remote_head')

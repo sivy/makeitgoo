@@ -9,8 +9,8 @@ import git_utils
 
 class App(models.Model):
     site = models.OneToOneField(Site, blank=False)
-    name = models.CharField(blank=False, max_length=100)
-    wd = models.CharField(blank=True, max_length=512);
+    name = models.CharField(blank=False, max_length=100, verbose_name="Application Name")
+    wd = models.CharField(blank=True, max_length=512, verbose_name="Working Directory")
     remote_url = models.CharField(max_length=100, blank=True)
     remote_head = models.CharField(max_length=100, blank=True)
     

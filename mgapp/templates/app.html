@@ -7,13 +7,31 @@ $(function() {
     $('#deploy').click(function(){
         $('#output').html('')
         $('#status').html('DEPLOYING');
-        $('#output').load('{% url mgapp.views.deploy_app %}?app_id=' + $('#app_id').val(), function(){
+        $('#output').load('{% url mgapp.views.deploy_app %}?app_id={{app.id}}', function(){
             $('#status').html('DEPLOYED');
             $('#deploys').load('{% url mgapp.views.deploys %}?&count=5&partial=true&app_id=' 
                 + $('#app_id').val())
         });
-        
     })
+    $('#savegit').click(function(){
+        $('#output').html('')
+        $('#status').html('UPDATING');
+        $.post('{% url mgapp.views.save_git app.id %}', 
+            { 
+                remote: $('#remote').val(), 
+                branch: $('#branch').val(), 
+                csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val(),
+            },
+            function(data, textStatus, jqXHR) {
+                console.log(data);
+                $('#output').html(data);
+            });
+        
+        $('#output').load('', function(){
+            $('#status').html('UPDATED');
+        });
+        
+    });
     
 });
 </script>
@@ -21,12 +39,20 @@ $(function() {
 
 {% block content %}
 <h1>{{ app.name }}</h1>
+
+{% include "gitinfo.html" %}
+
 <form name="makeitgoo">
 <input type="hidden" value="{{app.id}}" name="app_id" id="app_id" />
 <input type="button" value="deploy" id="deploy">
-<h3 id="status">STATUS</h3>
-<div id="output" style="font-family:'Inconsolata', Courier New, monospace; width:500px"></div>
 </form>
+
+<h3>LOG</h3>
+<strong id="status"></strong>
+<pre>
+<div id="output" style="font-family:'Inconsolata', Courier New, monospace; width:500px">
+</div>
+</pre>
 
 <h3>Previous Deployments for {{ app.name }}</h3>
 <div id="deploys">
