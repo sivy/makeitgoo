@@ -54,12 +54,14 @@ def app(request, app_id=None):
     app = App.objects.get(id=app_id)
     
     config = _get_config(app.wd)
+
+    git_info = {}
     
-    git_info = {
-        'head': git.head(wd=app.wd),
-        'remote': git.remote_url(wd=app.wd),
-        'branch': git.branch(wd=app.wd)
-    }
+    # git_info = {
+    #             'head': git.head(wd=app.wd),
+    #             'remote': git.remote_url(wd=app.wd),
+    #             'branch': git.branch(wd=app.wd)
+    #         }
     
     deploys = Deploy.objects.filter(app=app).order_by('-created')[:5]
     
@@ -129,19 +131,21 @@ def deploy_app(request):
     out = ''
 
     if (config['type'] == 'static'):
-        # try:
-        out += _update('starting in', run_cmd('pwd', wd=wd, echo=True))
-        out += _update('update from repo', run_cmd('git pull origin master', wd=wd, echo=True))
-        out += _update("post_update hooks", run_cmd('sh post_update.sh', wd=wd, echo=True))
-        out += _update('deploy built site', run_cmd('cp -R %s/* %s' % (
-            config['build_dir'], config['dest_dir']
-        ), wd=wd, echo=True))
-        # except Exception, e:
-        #             exc_type, exc_value, exc_traceback = sys.exc_info()
-        #             formatted_lines = traceback.format_exc().splitlines()
-        #                 
-        #             return HttpResponseServerError("<pre>%s\nERROR: %s\n\n%s</pre>" % (out, exc_value, formatted_lines))
-    
+        try:
+            out += _update('starting in', run_cmd('pwd', wd=wd, echo=True))
+            out += _update('update from repo', run_cmd('git pull origin master', wd=wd, echo=True))
+            out += _update("post_update hooks", run_cmd('sh post_update.sh', wd=wd, echo=True))
+            out += _update('deploy built site', run_cmd('cp -R %s/* %s' % (
+                config['build_dir'], config['dest_dir']
+                ), wd=wd, echo=True))
+        except Exception, e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            formatted_lines = traceback.format_exc().splitlines()
+
+            return HttpResponseServerError("<pre>%s\nERROR: %s\n\n%s</pre>" % (out, exc_value, formatted_lines))
+    if (config['type'] == 'wsgi'):
+        pass
+        
     do = Deploy.objects.create(app=app, deploy_id='placeholder', output=out, complete=True)
     do.save()
     
