@@ -5,6 +5,6 @@
     <img width='10' height='10' src="/media/img/admin/icon-yes.gif" alt="Deploy Succeeded">
     {% else %}
     <img width='10' height='10' src="/media/img/admin/icon-no.gif" alt="Deploy Failed">
-    {% endif %}<a href="{% url mgapp.views.deploy deploy.id %}">{{ deploy.created }}</a></li>
+    {% endif %}<a href="{% url mgapp.views.deploy deploy.id %}">{{ deploy.created }}</a> {{ deploy.message}}</li>
 {% endfor %}
 </ul>
