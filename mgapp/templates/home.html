@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <ul>
-    {% for app in apps %}
-        <li>{{app.name}} <a href='{% url mgapp.views.app app.id %}'>Manage</a> <a href='{{ app.config.url }}'>View</a></li>
-    {% endfor %}
-    </ul>
+<h3>Applications</h3>
+<ul>
+{% for app in apps %}
+    <li>{{app.name}} <a href='{% url mgapp.views.app app.id %}'>Manage</a> <a href='{{ app.config.url }}'>View</a></li>
+{% endfor %}
+</ul>
+    
+<h3>Recent Deploys</h3>
+<ul>
+{% for deploy in deploys %}
+    <li>{{deploy.app.name}} (<a href='{% url mgapp.views.app deploy.app.id %}'>manage</a>) "{{deploy.message}}" [<a href="{% url mgapp.views.deploy deploy.id %}">{{ deploy.created }}</a>]</li>
+{% endfor %}
+</ul>
+    
 {% endblock %}
+

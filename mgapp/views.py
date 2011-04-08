@@ -49,16 +49,24 @@ def home(request):
     apps = App.objects.all()
     for app in apps:
         app.load_config()
-        
+    
+    deploys = Deploy.objects.order_by('-created')[:30]
     return render_to_response("home.html", {
         'apps': apps,
-        
+        'deploys': deploys
     })
 
 def app(request, app_id=None):
 
     app = App.objects.get(id=app_id)
     app.load_config()
+    
+    envs = []
+    
+    if (app.config['envs']):
+        for label, env_data in app.config['envs'].iteritems():
+            env_data['label'] = label
+            envs.append(env_data)
     
     git_info = {}
     
@@ -72,6 +80,7 @@ def app(request, app_id=None):
     
     c = {
         'app': app,
+        'envs': envs,
         'git': git_info,
         'deploys': deploys
     }
@@ -129,23 +138,25 @@ def deploy_app(request):
     wd = app.wd
     
     config = _get_config(wd)
+    
     print config
 
     out = ''
 
     if (config['type'] == 'static'):
-        try:
-            out += _update('starting in', run_cmd('pwd', wd=wd, echo=True))
-            out += _update('update from repo', run_cmd(GIT + ' pull origin master', wd=wd, echo=True))
-            out += _update("post_update hooks", run_cmd('sh post_update.sh', wd=wd, echo=True))
-            out += _update('deploy built site', run_cmd('cp -R %s/* %s' % (
-                config['build_dir'], config['dest_dir']
-                ), wd=wd, echo=True, shell=True))
-        except Exception, e:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            formatted_lines = traceback.format_exc().splitlines()
+        if config['envs']:
+            try:
+                out += _update('starting in', run_cmd('pwd', wd=wd, echo=True))
+                out += _update('update from repo', run_cmd(GIT + ' pull origin master', wd=wd, echo=True))
+                out += _update("post_update hooks", run_cmd('sh post_update.sh', wd=wd, echo=True))
+                out += _update('deploy built site', run_cmd('cp -R %s/* %s' % (
+                    config['build_dir'], config['dest_dir']
+                    ), wd=wd, echo=True, shell=True))
+            except Exception, e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                formatted_lines = traceback.format_exc().splitlines()
 
-            return HttpResponseServerError("<pre>%s\nERROR: %s\n\n%s</pre>" % (out, exc_value, formatted_lines))
+                return HttpResponseServerError("<pre>%s\nERROR: %s\n\n%s</pre>" % (out, exc_value, formatted_lines))
     if (config['type'] == 'wsgi'):
         pass
     
