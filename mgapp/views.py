@@ -147,8 +147,9 @@ def deploy_app(request):
             return HttpResponseServerError("<pre>%s\nERROR: %s\n\n%s</pre>" % (out, exc_value, formatted_lines))
     if (config['type'] == 'wsgi'):
         pass
-        
-    do = Deploy.objects.create(app=app, deploy_id='placeholder', output=out, complete=True)
+    
+    success = '*** Process ended' not in out
+    do = Deploy.objects.create(app=app, deploy_id='placeholder', output=out, complete=success)
     do.save()
     
     return HttpResponse("<pre>%s\nDEPLOYED: <a href='%s'>%s</a></pre>" % (out, config['url'], config['url']))
