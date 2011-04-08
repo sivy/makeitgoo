@@ -70,8 +70,10 @@ def app(request, app_id=None):
     else:
         env_data = {}
         env_data['label'] = 'production'
-        for key, val in app.config.iteritems():
-            env.data[key] = val
+        # if 'host' in app.config: env_data['host'] = app.config['host']
+        if 'working_dir' in app.config: env_data['working_dir'] = app.config['working_dir']
+        if 'dest_dir' in app.config: env_data['dest_dir'] = app.config['dest_dir']
+        if 'host' in app.config: env_data['build_dir'] = app.config['build_dir']
         envs.append(env_data)    
     
     git_info = {}
