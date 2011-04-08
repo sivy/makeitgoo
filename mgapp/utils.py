@@ -49,4 +49,4 @@ def run_cmd(cmd, wd=None, runlocal=True, echo=False):
         formatted_lines = traceback.format_exc().splitlines()
         stderr_str += unicode(e) + '\n'.join(formatted_lines)
     
-    return stdout_str.rstrip() + stderr_str.rstrip()
+    return stdout_str.rstrip() + "\n" + stderr_str.rstrip()
