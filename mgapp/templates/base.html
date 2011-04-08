@@ -7,7 +7,7 @@
     </head>
     <body>
         <div id="content">
-        <p><strong><a href="{% url mgapp.views.home %}">Make It Goo</a></strong></p>
+        <p><strong><a href="{% url mgapp.views.home %}">Make It Goo</a>{% block breadcrumbs %}{% endblock %}</strong></p>
         {% block content %}{% endblock %}
         </div>
     </body>
