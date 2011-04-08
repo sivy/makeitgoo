@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block breadcrumbs %} / <a href="{% url mgapp.views.app deploy.app.id %}">{{ deploy.app.name }}</a>{% endblock %}
+
 {% block content %}
 
 <h3>Previous Deployments for {{ app.name }}</h3>
