@@ -46,11 +46,7 @@ $(function() {
 
 {% include "gitinfo.html" %}
 
-<h3>Deploy</h3>
-<form name="makeitgoo">
-<input type="hidden" value="{{app.id}}" name="app_id" id="app_id" />
-<input type="button" value="deploy" id="deploy">
-</form>
+{% include "deployinfo.html" %}
 
 <h3>LOG</h3>
 <strong id="status"></strong>
