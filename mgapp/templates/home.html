@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <ul>
     {% for app in apps %}
-        <a href='{% url mgapp.views.app app.id %}'>{{app.name}}</a>
+        <li>{{app.name}} <a href='{% url mgapp.views.app app.id %}'>Manage</a> <a href='{{ app.config.url }}'>View</a></li>
     {% endfor %}
+    </ul>
 {% endblock %}
