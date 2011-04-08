@@ -8,21 +8,24 @@ def _escape_shell_command(command):
         command = command.replace(n, '\%s' % n)
     return command
 
-def _run_cmd(cmd, wd=None, runlocal=True, echo=False):
+def run_cmd(cmd, wd=None, runlocal=True, echo=False, shell=False):
     if wd==None:
         wd='.'
     prefix=''
-    cmd = _escape_shell_command(cmd)
     if echo:
         prefix = "> %s\n" % cmd
+    
+    if shell:
+        cmd = _escape_shell_command(cmd)
+
     if runlocal:
         with lcd(wd):
-            return prefix + local(cmd, capture=True)
+            return prefix + local(cmd, capture=True, shell=shell)
     else:
         with cd(wd):
-            return prefix + run(cwd, capture=True)
+            return prefix + run(cwd, capture=True, shell=shell)
 
-def run_cmd(cmd, wd=None, runlocal=True, echo=False, shell=False):
+def _run_cmd(cmd, wd=None, runlocal=True, echo=False, shell=False):
     out = ''
     if wd!=None:
         if echo:
