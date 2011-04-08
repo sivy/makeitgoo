@@ -63,7 +63,7 @@ def app(request, app_id=None):
     
     envs = []
     
-    if (app.config['envs']):
+    if ("envs" in app.config):
         for label, env_data in app.config['envs'].iteritems():
             env_data['label'] = label
             envs.append(env_data)
