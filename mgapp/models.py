@@ -33,8 +33,8 @@ class App(models.Model):
     
 class Deploy(models.Model):
     app = models.ForeignKey(App, blank=False, related_name='deployments')
+    message = models.CharField(blank=True, max_length=512)
     created = models.DateTimeField(default=datetime.now)
-    deploy_id = models.TextField(blank=False, null=False)
     complete = models.BooleanField(blank=True)
     output = models.TextField(blank=True)
     
