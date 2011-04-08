@@ -150,7 +150,7 @@ def deploy_app(request):
         pass
     
     success = '*** Process ended' not in out
-    do = Deploy.objects.create(message=message, app=app, deploy_id='placeholder', output=out, complete=success)
+    do = Deploy.objects.create(message=message, app=app, output=out, complete=success)
     do.save()
     
     return HttpResponse("<pre>%s\nDEPLOYED: <a href='%s'>%s</a></pre>" % (out, config['url'], config['url']))
