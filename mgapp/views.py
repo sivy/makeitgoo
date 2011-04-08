@@ -140,7 +140,7 @@ def deploy_app(request):
             out += _update("post_update hooks", run_cmd('sh post_update.sh', wd=wd, echo=True))
             out += _update('deploy built site', run_cmd('cp -R %s/* %s' % (
                 config['build_dir'], config['dest_dir']
-                ), wd=wd, echo=True))
+                ), wd=wd, echo=True, shell=True))
         except Exception, e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             formatted_lines = traceback.format_exc().splitlines()
