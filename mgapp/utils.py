@@ -20,7 +20,7 @@ def run_cmd(cmd, wd=None, runlocal=True, echo=False, shell=False):
 
     if runlocal:
         with lcd(wd):
-            return prefix + local(cmd, capture=True, shell=shell)
+            return prefix + local(cmd, capture=True)
     else:
         with cd(wd):
             return prefix + run(cwd, capture=True, shell=shell)
