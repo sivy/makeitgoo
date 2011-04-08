@@ -1,5 +1,10 @@
 <ul>
 {% for deploy in deploys %}
-<li><img width='10' height='10' src="{% if deploy.complete %}/media/img/admin/icon-yes.gif{% endif %}" alt="True"> <a href="{% url mgapp.views.deploy deploy.id %}">{{ deploy.created }}</a></li>
+<li>
+    {% if deploy.complete %}
+    <img width='10' height='10' src="/media/img/admin/icon-yes.gif" alt="Deploy Succeeded">
+    {% else %}
+    <img width='10' height='10' src="/media/img/admin/icon-no.gif" alt="Deploy Failed">
+    {% endif %}<a href="{% url mgapp.views.deploy deploy.id %}">{{ deploy.created }}</a></li>
 {% endfor %}
 </ul>
