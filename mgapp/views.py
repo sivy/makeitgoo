@@ -123,6 +123,7 @@ def deploys(request):
 @jsonp
 def deploy_app(request):
     app_id = request.GET.get('app_id')
+    message = request.GET.get('message')
     app = App.objects.get(id=app_id)
     site_name = app.site.name
     wd = app.wd
