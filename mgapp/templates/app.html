@@ -40,10 +40,13 @@ $(function() {
 {% block content %}
 <h1>{{ app.name }}</h1>
 
-{{ app.wd }}
+<a href="{{ app.config.url }}">{{ app.config.url }}</a>
+
+<p>Working directory: {{ app.wd }}</p>
 
 {% include "gitinfo.html" %}
 
+<h3>Deploy</h3>
 <form name="makeitgoo">
 <input type="hidden" value="{{app.id}}" name="app_id" id="app_id" />
 <input type="button" value="deploy" id="deploy">
