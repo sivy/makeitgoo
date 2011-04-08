@@ -17,9 +17,20 @@ class App(models.Model):
     def __str__(self):
         return self.name
     
+    @property
     def latest_deploy(self):
         return self.deployments.order_by('-created')[0]
-        
+    
+    def load_config(self):
+        try:
+            import yaml
+            f = open("%s/mig.yaml" % self.wd)
+            config = yaml.load(f)
+            f.close()
+            self.config = config
+        except Exception, e:
+            self.config = { 'error': e.message }
+    
 class Deploy(models.Model):
     app = models.ForeignKey(App, blank=False, related_name='deployments')
     created = models.DateTimeField(default=datetime.now)
