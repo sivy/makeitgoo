@@ -1,0 +1,11 @@
+<h3>Deploy</h3>
+Last deploy: {% if app.latest_deploy.complete %}
+<img width='10' height='10' src="/media/img/admin/icon-yes.gif" alt="Deploy Succeeded">
+{% else %}
+<img width='10' height='10' src="/media/img/admin/icon-no.gif" alt="Deploy Failed">
+{% endif %}<a href="{% url mgapp.views.deploy deploy.id %}">{{ app.latest_deploy.created }}</a>
+<form name="makeitgoo">
+<input type="hidden" value="{{app.id}}" name="app_id" id="app_id" />
+Message:<br/>
+<input type="text" name="message" id="message" /> <input type="button" value="Push" id="deploy" />
+</form>
