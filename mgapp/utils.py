@@ -22,20 +22,27 @@ def _run_cmd(cmd, wd=None, runlocal=True, echo=False):
         with cd(wd):
             return prefix + run(cwd, capture=True)
 
-def run_cmd(cmd, wd=None, runlocal=True, echo=False):
+def run_cmd(cmd, wd=None, runlocal=True, echo=False, shell=False):
+    out = ''
     if wd!=None:
+        if echo:
+            out += 'cd ' + wd + "\n"
         os.chdir(wd)
 
-
     prefix=''
-    cmd = shlex.split(cmd.encode('ascii'))
-
-    out, stdout_str, stderr_str = '','',''
     if echo:
-        out = "> %s\n" % cmd    
+        out += "> %s\n" % cmd    
+
+    if shell:
+        cmd = _escape_shell_command(cmd)
+    else:
+        cmd = shlex.split(cmd.encode('ascii'))
+
+    stdout_str, stderr_str = '',''
     
     try:
         proc = subprocess.Popen(cmd,
+                                shell=shell,
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE)
 
@@ -49,4 +56,4 @@ def run_cmd(cmd, wd=None, runlocal=True, echo=False):
         formatted_lines = traceback.format_exc().splitlines()
         stderr_str += unicode(e) + '\n'.join(formatted_lines)
     
-    return stdout_str.rstrip() + "\n" + stderr_str.rstrip()
+    return out + "\n" + stdout_str.rstrip() + stderr_str.rstrip()
