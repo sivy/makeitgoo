@@ -46,8 +46,10 @@ $(function() {
 
 {% include "gitinfo.html" %}
 
+{% for env in envs %}
+<h4>{{env.label}}</h4>
 {% include "deployinfo.html" %}
-
+{% endfor %}
 <h3>LOG</h3>
 <strong id="status"></strong>
 <pre>

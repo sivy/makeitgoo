@@ -6,5 +6,5 @@ Last deploy: {% if app.latest_deploy.complete %}
 {% endif %}<a href="{% url mgapp.views.deploy app.latest_deploy.id %}">{{ app.latest_deploy.created }}</a> "{{ app.latest_deploy.message }}"
 <form name="makeitgoo">
 <input type="hidden" value="{{app.id}}" name="app_id" id="app_id" />
-Deploy Message: <input type="text" name="message" id="message" /> <input type="button" value="Push" id="deploy" />
+Deploy Message: <input type="text" name="message" id="message" /> <input type="button" value="Push to {{env.label}}" id="deploy" />
 </form>
