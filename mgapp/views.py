@@ -31,6 +31,7 @@ import git_utils as git
 from utils import run_cmd
 
 from mgapp.models import App, Deploy
+import operations
 
 GIT = dsettings.GIT
 
@@ -46,6 +47,9 @@ def _get_config(wd):
 
 def home(request):    
     apps = App.objects.all()
+    for app in apps:
+        app.load_config()
+        
     return render_to_response("home.html", {
         'apps': apps,
         
@@ -54,9 +58,8 @@ def home(request):
 def app(request, app_id=None):
 
     app = App.objects.get(id=app_id)
+    app.load_config()
     
-    config = _get_config(app.wd)
-
     git_info = {}
     
     git_info = {
@@ -64,7 +67,6 @@ def app(request, app_id=None):
         'remote': git.remote_url(wd=app.wd).rstrip(),
         'branch': git.branch(wd=app.wd).rstrip(),
     }
-    print git_info
     
     deploys = Deploy.objects.filter(app=app).order_by('-created')[:5]
     
@@ -87,12 +89,9 @@ def save_git(request, app_id=None):
     if not (git_remote and git_branch):
         return HttpResponseServerError("no remote or branch")
     
-    out = git.set_remote(git_remote, wd=app.wd)
-    print out
-    out += git.checkout(git_branch, wd=app.wd)
-    print out
-    
-    return HttpResponse (out)
+    output = operations.save_git(remote=git_remote, branch=git_branch)
+
+    return HttpResponse (output)
     
 def deploy(request, deploy_id=None):
     
