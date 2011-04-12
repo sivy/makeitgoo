@@ -217,14 +217,15 @@ def deploy_app(request):
                                         "<pre>ERROR:\n\n%s</pre>" % res)
                                 out += _update("update from repo", res)
                                 
-                                res = run('sh post_update.sh')
-                                if res.failed:
-                                    do.out=out
-                                    do.complete=False
-                                    do.save()
-                                    return HttpResponseServerError(
-                                        "<pre>ERROR:\n\n%s</pre>" % res)
-                                out += _update("post_update hooks", res)
+                                if 'post_update' in env_data:
+                                    res = run('sh %' env_data['post_update'])
+                                    if res.failed:
+                                        do.out=out
+                                        do.complete=False
+                                        do.save()
+                                        return HttpResponseServerError(
+                                            "<pre>ERROR:\n\n%s</pre>" % res)
+                                    out += _update("post_update hooks", res)
                                 
                                 res = run('cp -R %s/* %s' % (
                                     env_data['build_dir'], env_data['dest_dir']
