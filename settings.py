@@ -89,4 +89,6 @@ INSTALLED_APPS = (
     'south'
 )
 
+LOGIN_REDIRECT_URL='/'
+
 from local_settings import *

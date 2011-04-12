@@ -15,6 +15,10 @@ urlpatterns = patterns('mgapp.views',
 )
 
 urlpatterns += patterns('',
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+)
+
+urlpatterns += patterns('',
     url(r'^static/(?P<path>.*)/?$', 'django.views.static.serve', 
         name="static",
         kwargs={ 'document_root': media_dir }),

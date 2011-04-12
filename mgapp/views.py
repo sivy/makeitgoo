@@ -11,6 +11,7 @@ from django.core.context_processors import csrf
 from django.core import serializers
 from django.db.models import Sum
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 
 import simplejson as json
 
@@ -48,6 +49,9 @@ def _get_config(wd):
     return config
 
 
+## http://en.gravatar.com/site/implement/images/python/
+
+@login_required
 def home(request):    
     apps = App.objects.all()
     for app in apps:
@@ -59,11 +63,11 @@ def home(request):
         'deploys': deploys
     })
 
-
+@login_required
 def app(request, app_id=None):
     app = App.objects.get(id=app_id)
     app.load_config()
-    
+        
     envs = []
     
     if ("envs" in app.config):
@@ -106,13 +110,14 @@ def app(request, app_id=None):
         'app': app,
         'envs': envs,
         'git': git_info,
-        'deploys': deploys
+        'deploys': deploys,
     }
     c.update(csrf(request))
     
     return render_to_response("app.html", c)
 
 
+@login_required
 def save_git(request, app_id=None):
     app = App.objects.get(id=app_id)
     
@@ -127,6 +132,7 @@ def save_git(request, app_id=None):
     return HttpResponse (output)
 
 
+@login_required
 def deploy(request, deploy_id=None):
     
     deploy = Deploy.objects.get(id=deploy_id)

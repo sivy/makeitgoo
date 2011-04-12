@@ -3,6 +3,7 @@ from datetime import datetime
 # Create your models here.
 
 from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 import sys
 
 import git_utils
@@ -35,7 +36,8 @@ class App(models.Model):
             self.config = { 'error': e.message }
     
 class Deploy(models.Model):
-    app = models.ForeignKey(App, blank=False, related_name='deployments')
+    app = models.ForeignKey(App, null=True, related_name='deployments')
+    deploying_user = models.ForeignKey(User, null=True, related_name='deployments')
     message = models.CharField(blank=True, max_length=512)
     created = models.DateTimeField(default=datetime.now)
     complete = models.BooleanField(blank=True)
