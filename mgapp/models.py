@@ -19,8 +19,11 @@ class App(models.Model):
     
     @property
     def latest_deploy(self):
-        return self.deployments.order_by('-created')[0]
-    
+        if self.deployments.order_by('-created'):
+            return self.deployments.order_by('-created')[0]
+        else:
+            return None
+            
     def load_config(self):
         try:
             import yaml

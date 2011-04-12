@@ -1,4 +1,3 @@
-from __future__ import with_statement
 import time
 from urlparse import urlsplit
 from urllib import unquote_plus
@@ -33,10 +32,13 @@ from utils import run_cmd
 from mgapp.models import App, Deploy
 import operations
 
+from fabric.api import *
+
 GIT = dsettings.GIT
 
 def _update(caption, content):
     return "%s\n----------\n%s\n\n" % (caption.upper(), content)
+
 
 def _get_config(wd):
     import yaml
@@ -44,6 +46,7 @@ def _get_config(wd):
     config = yaml.load(f)
     f.close()
     return config
+
 
 def home(request):    
     apps = App.objects.all()
@@ -56,8 +59,8 @@ def home(request):
         'deploys': deploys
     })
 
-def app(request, app_id=None):
 
+def app(request, app_id=None):
     app = App.objects.get(id=app_id)
     app.load_config()
     
@@ -66,7 +69,28 @@ def app(request, app_id=None):
     if ("envs" in app.config):
         for label, env_data in app.config['envs'].iteritems():
             env_data['label'] = label
+            
+            env.host_string = env_data['host']
+            host = env_data['host']
+            if '@' in host:
+                host = host.split('@')[1]
+            env.key_filename = dsettings.SSH_KEY_DIR + '/deploy_rsa'
+            env.no_keys = True
+            env.user = 'deploy'
+                        
+            print env
+            
+            with cd(env_data['working_dir']):
+                print run('pwd')
+                git_info = {
+                    'head': git.head().rstrip(),
+                    'remote': git.remote_url().rstrip(),
+                    'branch': git.branch().rstrip(),
+                }
+                env_data['git'] = git_info
+            
             envs.append(env_data)
+            
     else:
         env_data = {}
         env_data['label'] = 'production'
@@ -74,15 +98,7 @@ def app(request, app_id=None):
         if 'working_dir' in app.config: env_data['working_dir'] = app.config['working_dir']
         if 'dest_dir' in app.config: env_data['dest_dir'] = app.config['dest_dir']
         if 'host' in app.config: env_data['build_dir'] = app.config['build_dir']
-        envs.append(env_data)    
-    
-    git_info = {}
-    
-    git_info = {
-        'head': git.head(wd=app.wd).rstrip(),
-        'remote': git.remote_url(wd=app.wd).rstrip(),
-        'branch': git.branch(wd=app.wd).rstrip(),
-    }
+        envs.append(env_data)
     
     deploys = Deploy.objects.filter(app=app).order_by('-created')[:5]
     
@@ -96,20 +112,21 @@ def app(request, app_id=None):
     
     return render_to_response("app.html", c)
 
-def save_git(request, app_id=None):
-    
-    app = App.objects.get(id=app_id)
 
+def save_git(request, app_id=None):
+    app = App.objects.get(id=app_id)
+    
     git_remote = request.POST.get('remote')
     git_branch = request.POST.get('branch')
-
+    
     if not (git_remote and git_branch):
         return HttpResponseServerError("no remote or branch")
     
     output = operations.save_git(remote=git_remote, branch=git_branch)
-
-    return HttpResponse (output)
     
+    return HttpResponse (output)
+
+
 def deploy(request, deploy_id=None):
     
     deploy = Deploy.objects.get(id=deploy_id)
@@ -117,6 +134,7 @@ def deploy(request, deploy_id=None):
     return render_to_response("deploy.html", {
         'deploy': deploy
     })
+
 
 @jsonp
 def deploys(request):
@@ -136,40 +154,102 @@ def deploys(request):
         'deploys': deploys
     })
 
+
 @recordstats('')
 @jsonp
 def deploy_app(request):
     app_id = request.GET.get('app_id')
     message = request.GET.get('message')
+    env_label = request.GET.get('env')
+    
     app = App.objects.get(id=app_id)
-    site_name = app.site.name
+    app.load_config()
+
+    site_name = app.name
     wd = app.wd
+
+    do = Deploy.objects.create(message=message, app=app)
     
-    config = _get_config(wd)
+    if not "envs" in app.config:
+        return HttpResponseServerError("no deploy environments defined for app " + app.name)
     
+    config = app.config
     print config
 
     out = ''
 
     if (config['type'] == 'static'):
-        if config['envs']:
-            try:
-                out += _update('starting in', run_cmd('pwd', wd=wd, echo=True))
-                out += _update('update from repo', run_cmd(GIT + ' pull origin master', wd=wd, echo=True))
-                out += _update("post_update hooks", run_cmd('sh post_update.sh', wd=wd, echo=True))
-                out += _update('deploy built site', run_cmd('cp -R %s/* %s' % (
-                    config['build_dir'], config['dest_dir']
-                    ), wd=wd, echo=True, shell=True))
-            except Exception, e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                formatted_lines = traceback.format_exc().splitlines()
+        if 'envs' in config:
+            if env_label in config['envs']:
+                Random.atfork()
+                env_data = config['envs'][env_label]
+                print env_data
+                
+                env.host_string = env_data['host']
+                host = env_data['host']
+                if '@' in host:
+                    host = host.split('@')[1]
+                env.key_filename = dsettings.SSH_KEY_DIR + '/deploy_rsa'
+                env.no_keys = True
+                env.user = 'deploy'                
+                
+                try:
+                    with settings(warn_only=True):
+                        if run("test -d %s" % env_data['working_dir']).failed:
+                            run('mkdir -p %s' % env_data['working_dir'])
+                        with cd(env_data['working_dir']):
+                            with hide('running', 'stderr', 'stdout', 'output', 'aborts', 'warnings', 'status', 'user'):                        
+                                res = run('pwd')
+                                if res.failed:
+                                    do.out=out
+                                    do.complete=False
+                                    do.save()
+                                    return HttpResponseServerError(
+                                        "<pre>ERROR:\n\n%s</pre>" % res)
+                                out += _update("starting in", res)
+                                
+                                res = git.update()
+                                if res.failed:
+                                    do.out=out
+                                    do.complete=False
+                                    do.save()
+                                    return HttpResponseServerError(
+                                        "<pre>ERROR:\n\n%s</pre>" % res)
+                                out += _update("update from repo", res)
+                                
+                                res = run('sh post_update.sh')
+                                if res.failed:
+                                    do.out=out
+                                    do.complete=False
+                                    do.save()
+                                    return HttpResponseServerError(
+                                        "<pre>ERROR:\n\n%s</pre>" % res)
+                                out += _update("post_update hooks", res)
+                                
+                                res = run('cp -R %s/* %s' % (
+                                    env_data['build_dir'], env_data['dest_dir']
+                                    ))
+                                if res.failed:
+                                    do.out=out
+                                    do.complete=False
+                                    do.save()
+                                    return HttpResponseServerError(
+                                        "<pre>ERROR:\n\n%s</pre>" % res)
+                                out += _update("deploy built site", res)
+                                    
+                except Exception, e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    formatted_lines = traceback.format_exc().splitlines()
 
-                return HttpResponseServerError("<pre>%s\nERROR: %s\n\n%s</pre>" % (out, exc_value, formatted_lines))
+                    return HttpResponseServerError("<pre>%s\nERROR: %s\n\n%s</pre>" % (out, exc_value, "\n".join(formatted_lines)))
+        else:
+            pass
+            
     if (config['type'] == 'wsgi'):
         pass
     
-    success = '*** Process ended' not in out
-    do = Deploy.objects.create(message=message, app=app, output=out, complete=success)
+    do.out = out
+    do.complete=True
     do.save()
     
     return HttpResponse("<pre>%s\nDEPLOYED: <a href='%s'>%s</a></pre>" % (out, config['url'], config['url']))

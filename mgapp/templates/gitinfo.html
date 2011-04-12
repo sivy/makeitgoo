@@ -1,4 +1,8 @@
-<h3 id="gitinfo">Git Info</h3>
+{% extends "section.html" %}
+
+{% block name %}Git{% endblock %}
+
+{% block content %}
 <form name="gitinfo" method="POST" action="{% url mgapp.views.save_git app.id %}">{% csrf_token %}
     remote: <input type="text" id="remote" name="remote" value="{{git.remote}}"/><br />
     branch: <input type="text" id="branch" name="branch" value="{{git.branch}}"/>
@@ -9,3 +13,4 @@
     </p>
     <input type="button" id="savegit" value="Update Git Info">
 </form>
+{% endblock %}

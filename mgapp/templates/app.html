@@ -7,7 +7,7 @@ $(function() {
     $('#deploy').click(function(){
         $('#output').html('')
         $('#status').html('DEPLOYING');
-        $('#output').load('{% url mgapp.views.deploy_app %}?app_id={{app.id}}&message=' + $('#message').val(), function(){
+        $('#output').load('{% url mgapp.views.deploy_app %}?app_id={{app.id}}&message=' + $('#message').val() + '&env=' + $('#env').val(), function(){
             $('#status').html('DEPLOYED');
             $('#deploys').load('{% url mgapp.views.deploys %}?&count=5&partial=true&app_id=' 
                 + $('#app_id').val())
@@ -37,30 +37,40 @@ $(function() {
 </script>
 {% endblock %}
 
+{% block breadcrumbs %} / <a href="{% url mgapp.views.app app.id %}">{{ app.name }}</a>{% endblock %}
+
 {% block content %}
+<section>
 <h1>{{ app.name }}</h1>
 
 <a href="{{ app.config.url }}">{{ app.config.url }}</a>
 
 <p>Working directory: {{ app.wd }}</p>
-
+</section>
+<div id="left-col">
 {% include "gitinfo.html" %}
 
 {% for env in envs %}
-<h4>{{env.label}}</h4>
 {% include "deployinfo.html" %}
 {% endfor %}
-<h3>LOG</h3>
-<strong id="status"></strong>
-<pre>
-<div id="output" style="font-family:'Inconsolata', Courier New, monospace; width:500px">
 </div>
-</pre>
 
-<h3>Previous Deployments for {{ app.name }}</h3>
+<div id="right-col">
+<section id="log">
+    <h3>Log</h3>
+    <strong id="status"></strong>
+    <pre id="output" style="font-family:'Inconsolata', Courier New, monospace; width:500px">
+        
+    </pre>
+</section>
+
+<section id="deploys">
+    <h3>Previous Deployments for {{ app.name }}</h3>
 <div id="deploys">
 {% include "deploy_list.html" %}
 </div>
 <a href="{% url mgapp.views.deploys %}?app_id={{app.id}}">...more</a>
+</section>
 
+</div>
 {% endblock %}

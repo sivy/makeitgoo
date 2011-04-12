@@ -1,46 +1,48 @@
-from __future__ import with_statement
 from fabric.api import *
 from django.conf import settings as dsettings
 
-from utils import run_cmd
+"""
+These are designed to be called from a fabric context
+"""
 
-GIT=dsettings.GIT
-
-def current_commit(wd=None, runlocal=True):
-    cmd = GIT + ' log -n1 --pretty="%H"'
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def current_commit():
+    cmd = 'git log -n1 --pretty="%H"'
+    return run(cmd)
 
 # ---
+def update():
+    cmd = 'git pull origin master'
+    return run(cmd)
 
-def checkout(commitish, wd=None, runlocal=True):
-    cmd = GIT + ' checkout %s' % commitish
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def checkout(commitish):
+    cmd = 'git checkout %s' % commitish
+    return run(cmd)
     
-def branch(wd=None, runlocal=True):
-    cmd = GIT + ' rev-parse --symbolic-full-name --abbrev-ref HEAD'
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def branch():
+    cmd = 'git rev-parse --symbolic-full-name --abbrev-ref HEAD'
+    return run(cmd)
 
-def set_remote(remote, wd=None, runlocal=True):
-    cmd = GIT + ' remote set-url origin %s' % remote
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def set_remote(remote):
+    cmd = 'git remote set-url origin %s' % remote
+    return run(cmd)
 
-def status(wd=None, runlocal=True):
-    cmd = GIT + ' status'
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def status():
+    cmd = 'git status'
+    return run(cmd)
 
-def merge_base(wd=None, runlocal=True):
-    cmd = GIT + ' merge-base'
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def merge_base():
+    cmd = 'git merge-base'
+    return run(cmd)
 
 # apparently b0rken
-def upstream(wd=None, runlocal=True):
-    cmd = GIT + ' rev-parse @{u}'
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def upstream():
+    cmd = 'git rev-parse @{u}'
+    return run(cmd)
 
-def head(wd=None, runlocal=True):
-    cmd = GIT + ' rev-parse HEAD'
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def head():
+    cmd = 'git rev-parse HEAD'
+    return run(cmd)
 
-def remote_url(wd=None, runlocal=True):
-    cmd = GIT + ' config --get remote.origin.url'
-    return run_cmd(cmd, wd=wd, runlocal=runlocal)
+def remote_url():
+    cmd = 'git config --get remote.origin.url'
+    return run(cmd)

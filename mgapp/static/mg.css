@@ -4,6 +4,24 @@ body {
     background-color: #dfdfdf;
 }
 
+#banner {
+    width: auto;
+    padding: 8px;
+    margin: -5px -20px 15px;
+    border-bottom: 1ps solid #999;
+    background-color: #333;
+    color: #ddd;
+    font-family: "Inconsolata", "Courier New", Courier, sans-serif;
+    font-size: 14px;
+}
+
+#banner a {
+    color: #eee;
+    font-family: "Inconsolata", "Courier New", Courier, sans-serif;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
 #content {
     border: 1px solid #bbb;
     background-color: #fff;
@@ -22,5 +40,33 @@ div#deploys ul {
 h1, h2, h3, h4 {
     margin: 15px 0 10px;
     padding: 0 0 5px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ccc;
 }
+
+section {
+    padding: 5px;
+}
+
+section h3 {
+    background-color: #d9d9d9;
+    color: #333;
+    margin: -5px -5px 10px;
+    padding: 3px 3px 3px 10px;
+    font-weight: normal;
+    border-bottom: 1px solid #999;
+}
+
+#left-col section {
+    
+}
+
+/*#left-col {
+    float: left;
+    width: 200px;
+    padding: 5px;
+}
+#right-col {
+    float: right;
+    margin-left: 220px;
+    padding: 5px;
+}*/
