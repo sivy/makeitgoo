@@ -218,7 +218,7 @@ def deploy_app(request):
                                 out += _update("update from repo", res)
                                 
                                 if 'post_update' in env_data:
-                                    res = run('sh %' env_data['post_update'])
+                                    res = run('sh %' % env_data['post_update'])
                                     if res.failed:
                                         do.out=out
                                         do.complete=False
