@@ -121,15 +121,18 @@ def create_app(request):
     wd = '%s/%s' % (appserver_root, name)
     res = local('mkdir -p %s' % wd)
     if res.return_code == 0:
+        local('chmod 777 %s' % wd)
         app.wd = wd
     else:
         return HttpResponseServerError('could not setup working directory')
 
     app.save()
 
-    with cd(app.wd):
-        cmd = GIT + ' clone %s' % remote
-        local(cmd)
+    with lcd(app.wd):
+        with settings(warnings_only=True):
+            print local('pwd', capture=True)
+            cmd = GIT + ' clone %s .' % remote
+            print "CLONE: " + local(cmd, capture=True)
     
     return redirect ( 'mgapp.views.app', app_id=app.id )
 
