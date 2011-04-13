@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Applications</h3>
+<h3>{{ user }}'s Applications</h3>
 <ul>
 {% for app in apps %}
     <li>{{app.name}} <a href='{% url mgapp.views.app app.id %}'>Manage</a> <a href='{{ app.config.url }}'>View</a></li>
 {% endfor %}
+    <li><form action="{% url mgapp.views.create_app %}" method="post">{% csrf_token %}
+        <label>Add App: <input type='text' name='name' id="app_name"></label>
+        <label>Remote: <input type='text' name="remote" id="app_remote"></label>        
+        <input type="submit" value="Add App">
+        </form></li>
 </ul>
     
 <h3>Recent Deploys</h3>

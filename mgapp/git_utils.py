@@ -10,6 +10,10 @@ def current_commit():
     return run(cmd)
 
 # ---
+def clone(remote):
+    cmd = 'git clone %s' % remote
+    return run(cmd)
+
 def update():
     cmd = 'git pull origin master'
     return run(cmd)

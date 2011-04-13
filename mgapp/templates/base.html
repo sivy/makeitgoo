@@ -7,7 +7,7 @@
     </head>
     <body>
         <div id="content">
-        <p id="banner"><strong><a href="{% url mgapp.views.home %}">Make It Goo</a>{% block breadcrumbs %}{% endblock %}</strong> {% if user %}<span id="user">Logged in as {{ user.username }}</span>{% endif %}</p>
+        <p id="banner"><strong><a href="{% url mgapp.views.home %}">Make It Goo</a>{% block breadcrumbs %}{% endblock %}</strong>{% if user %} <span id="user">Logged in as {{ user.username }}</span>{% endif %}</p>
         {% block content %}{% endblock %}
         </div>
         <p>a <a href="http://wallrazer.com">wallrazer</a> thing</p>

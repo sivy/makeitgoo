@@ -3,7 +3,7 @@ from urlparse import urlsplit
 from urllib import unquote_plus
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseServerError
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.contrib.csrf.middleware import csrf_exempt
@@ -53,15 +53,16 @@ def _get_config(wd):
 
 @login_required
 def home(request):    
-    apps = App.objects.all()
+    apps = App.objects.filter(user=request.user)
     for app in apps:
         app.load_config()
     
-    deploys = Deploy.objects.order_by('-created')[:30]
+    deploys = Deploy.objects.filter(app__user=request.user).order_by('-created')[:30]
     return render_to_response("home.html", {
         'apps': apps,
         'deploys': deploys
-    })
+    }, context_instance=RequestContext(request))
+
 
 @login_required
 def app(request, app_id=None):
@@ -94,28 +95,43 @@ def app(request, app_id=None):
                 env_data['git'] = git_info
             
             envs.append(env_data)
-            
-    else:
-        env_data = {}
-        env_data['label'] = 'production'
-        # if 'host' in app.config: env_data['host'] = app.config['host']
-        if 'working_dir' in app.config: env_data['working_dir'] = app.config['working_dir']
-        if 'dest_dir' in app.config: env_data['dest_dir'] = app.config['dest_dir']
-        if 'host' in app.config: env_data['build_dir'] = app.config['build_dir']
-        envs.append(env_data)
     
     deploys = Deploy.objects.filter(app=app).order_by('-created')[:5]
     
     c = {
         'app': app,
         'envs': envs,
-        'git': git_info,
+        'git': {},
         'deploys': deploys,
     }
     c.update(csrf(request))
     
-    return render_to_response("app.html", c)
+    return render_to_response("app.html", c, context_instance=RequestContext(request))
 
+
+@login_required
+def create_app(request):
+    user = request.user
+    name = request.POST.get('name')
+    remote = request.POST.get('remote')
+
+    app = App.objects.create(name=name, remote_url=remote, user=user)
+    
+    appserver_root = dsettings.APPSERVER_ROOT
+    wd = '%s/%s' % (appserver_root, name)
+    res = local('mkdir -p %s' % wd)
+    if res.return_code == 0:
+        app.wd = wd
+    else:
+        return HttpResponseServerError('could not setup working directory')
+
+    app.save()
+
+    with cd(app.wd):
+        cmd = GIT + ' clone %s' % remote
+        local(cmd)
+    
+    return redirect ( 'mgapp.views.app', app_id=app.id )
 
 @login_required
 def save_git(request, app_id=None):
@@ -139,7 +155,7 @@ def deploy(request, deploy_id=None):
     
     return render_to_response("deploy.html", {
         'deploy': deploy
-    })
+    }, context_instance=RequestContext(request))
 
 
 @jsonp
@@ -158,7 +174,7 @@ def deploys(request):
     return render_to_response(t, {
         'app': app,
         'deploys': deploys
-    })
+    }, context_instance=RequestContext(request))
 
 
 @recordstats('')
