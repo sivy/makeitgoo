@@ -12,6 +12,7 @@ class AppManager(admin.ModelAdmin):
                 'fields': ('remote_url', 'remote_head')
             }),
         )
+    list_display = ['name','remote_url','user']
 
 class DeployManager(admin.ModelAdmin):
     list_display = ['app', 'created', 'complete']
