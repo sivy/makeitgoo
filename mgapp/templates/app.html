@@ -7,7 +7,7 @@ $(function() {
     $('#deploy').click(function(){
         $('#output').html('')
         $('#status').html('DEPLOYING');
-        $('#output').load('{% url mgapp.views.deploy_app %}?app_id={{app.id}}&message=' + $('#message').val() + '&env=' + $('#env').val(), function(){
+        $('#output').load('{% url mgapp.views.deploy_app %}?app_id={{app.id}}&message=' + escape($('#message').val()) + '&env=' + $('#env').val(), function(){
             $('#status').html('DEPLOYED');
             $('#deploys').load('{% url mgapp.views.deploys %}?&count=5&partial=true&app_id=' 
                 + $('#app_id').val())
